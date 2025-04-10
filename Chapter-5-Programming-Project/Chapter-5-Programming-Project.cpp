@@ -1,74 +1,43 @@
 #include <iostream>
-#include <iomanip>
-
+#include <cstdlib>
+#include <ctime>
 using namespace std;
 
 // Function Prototypes
-int getStartingPopulation();
-double getDailyIncrease();
-int getNumberOfDays();
-void displayPopulationGrowth(int startPop, double dailyIncrease, int numDays);
+int generateRandomNumber(int min = 1, int max = 100);
+void playGuessingGame(int target);
 
 int main() {
-	cout << "Population Growth Predictor\n";
-
-	int startingPopulation = getStartingPopulation();
-	double dailyIncrease = getDailyIncrease();
-	int numberOfDays = getNumberOfDays();
-
-	displayPopulationGrowth(startingPopulation, dailyIncrease, numberOfDays);
-
+	cout << "Welcome to the Number Guessing Game!\n";
+	int randomNumber = generateRandomNumber();
+	playGuessingGame(randomNumber);
 	return 0;
 }
 
-// Function to get and validate starting population
-int getStartingPopulation() {
-	int population;
-	do {
-		cout << "Enter the starting number of organisms (minimum 2): ";
-		cin >> population;
-		if (population < 2) {
-			cout << "Error: Starting Population must be at least 2.\n";
-		}
-	} while (population < 2);
-	return population;
+// Generates a random number between min and max
+int generateRandomNumber(int min, int max) {
+	srand(static_cast<unsigned int>(time(0))); // Seed RNG
+	return rand() % (max - min + 1) + min;
 }
 
-// Function to get and validate daily increase
-double getDailyIncrease() {
-	double increase;
+// Handles the guessing loop and feedback
+void playGuessingGame(int target) {
+	int guess;
+	int attempts = 0;
+
 	do {
-		cout << "Enter the average daily population increase (as a percentage): ";
-		cin >> increase;
-		if (increase < 0) {
-			cout << "Error: Daily incease cannot be negative.\n";
+		cout << "Enter your guess (between 1 and 100): ";
+		cin >> guess;
+		attempts++;
+
+		if (guess > target) {
+			cout << "Too high, try again.\n";
 		}
-	} while (increase < 0);
-	return increase;
-}
-
-// Funtion to get and validate number of days
-int getNumberOfDays() {
-	int days;
-	do {
-		cout << "Enter the number of days the organisms will multiply (minimum 1): ";
-		cin >> days;
-		if (days < 1) {
-			cout << "Error: Number of days must be at least 1.\n";
+		else if (guess < target) {
+			cout << "Too low, try again.\n";
 		}
-	} while (days < 1);
-	return days;
-}
-
-// Function to display population growth
-void displayPopulationGrowth(int startPop, double dailyIncrease, int numDays) {
-	cout << fixed << setprecision(2);
-	cout << "\nDay\tPopulation\n";
-	cout << "----------------------\n";
-
-	double population = startPop;
-	for (int day = 1; day <= numDays; ++day) {
-		cout << day << "\t" << population << endl;
-		population += population * (dailyIncrease / 100);
-	}
+		else {
+			cout << "Congratulations! You guessed it in " << attempts << " attempts.\n";
+		}
+	} while (guess != target);
 }

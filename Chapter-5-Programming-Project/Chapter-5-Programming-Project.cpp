@@ -1,74 +1,69 @@
 #include <iostream>
+#include <fstream>
+#include <vector>
+#include <string>
+#include <utility> // for std::pair
 #include <iomanip>
 
 using namespace std;
 
 // Function Prototypes
-int getStartingPopulation();
-double getDailyIncrease();
-int getNumberOfDays();
-void displayPopulationGrowth(int startPop, double dailyIncrease, int numDays);
+vector<pair<int, int>> readPopulationData(const string& fileName);
+void displayBarChart(const string& townName, const vector<pair<int, int>>& data);
 
 int main() {
-	cout << "Population Growth Predictor\n";
+	string townName, fileName;
 
-	int startingPopulation = getStartingPopulation();
-	double dailyIncrease = getDailyIncrease();
-	int numberOfDays = getNumberOfDays();
+	cout << "Enter the name of the town: ";
+	getline(cin, townName);
 
-	displayPopulationGrowth(startingPopulation, dailyIncrease, numberOfDays);
+	cout << "Enter the name of the data file: ";
+	getline(cin, fileName);
 
+	vector<pair<int, int>> populationData = readPopulationData(fileName);
+
+	if (populationData.empty()) {
+		cout << "Error: Could not read data or file is empty.\n";
+		return 1;
+	}
+
+	displayBarChart(townName, populationData);
 	return 0;
 }
 
-// Function to get and validate starting population
-int getStartingPopulation() {
-	int population;
-	do {
-		cout << "Enter the starting number of organisms (minimum 2): ";
-		cin >> population;
-		if (population < 2) {
-			cout << "Error: Starting Population must be at least 2.\n";
-		}
-	} while (population < 2);
-	return population;
+// Reads population data (year and population) from a file
+vector<pair<int, int>> readPopulationData(const string& fileName) {
+	ifstream inputFile(fileName);
+	vector<pair<int, int>> data;
+	int year, population;
+
+	if (!inputFile) {
+		cerr << "Error: Unable to open file\"" << fileName << "\".\n";
+		return data; // empty
+	}
+
+	while (inputFile >> year >> population) {
+		data.emplace_back(year, population);
+	}
+
+	inputFile.close();
+	return data;
 }
 
-// Function to get and validate daily increase
-double getDailyIncrease() {
-	double increase;
-	do {
-		cout << "Enter the average daily population increase (as a percentage): ";
-		cin >> increase;
-		if (increase < 0) {
-			cout << "Error: Daily incease cannot be negative.\n";
+// Displays a bar chart of the population data
+void displayBarChart(const string& townName, const vector<pair<int, int>>& data) {
+	cout << "\n" << townName << " Population Growth\n";
+	cout << "(each * represents 1,000 people)\n\n";
+
+	for (const auto& entry : data) {
+		int year = entry.first;
+		int population = entry.second;
+		int numStars = population / 1000;
+
+		cout << year << " ";
+		for (int i = 0; i < numStars; ++i) {
+			cout << "*";
 		}
-	} while (increase < 0);
-	return increase;
-}
-
-// Funtion to get and validate number of days
-int getNumberOfDays() {
-	int days;
-	do {
-		cout << "Enter the number of days the organisms will multiply (minimum 1): ";
-		cin >> days;
-		if (days < 1) {
-			cout << "Error: Number of days must be at least 1.\n";
-		}
-	} while (days < 1);
-	return days;
-}
-
-// Function to display population growth
-void displayPopulationGrowth(int startPop, double dailyIncrease, int numDays) {
-	cout << fixed << setprecision(2);
-	cout << "\nDay\tPopulation\n";
-	cout << "----------------------\n";
-
-	double population = startPop;
-	for (int day = 1; day <= numDays; ++day) {
-		cout << day << "\t" << population << endl;
-		population += population * (dailyIncrease / 100);
+		cout << endl;
 	}
 }

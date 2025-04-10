@@ -1,68 +1,36 @@
 #include <iostream>
-#include <fstream>
-#include <vector>
-#include <string>
-#include <utility> // for std::pair
-#include <iomanip>
 
 using namespace std;
 
 // Function Prototypes
-vector<pair<int, int>> readPopulationData(const string& fileName);
-void displayBarChart(const string& townName, const vector<pair<int, int>>& data);
+void displayPatternA();
+void displayPatternB();
 
 int main() {
-	string townName, fileName;
+	cout << "Pattern A" << endl;
+	displayPatternA();
 
-	cout << "Enter the name of the town: ";
-	getline(cin, townName);
+	cout << "\nPattern B" << endl;
+	displayPatternB();
 
-	cout << "Enter the name of the data file: ";
-	getline(cin, fileName);
-
-	vector<pair<int, int>> populationData = readPopulationData(fileName);
-
-	if (populationData.empty()) {
-		cout << "Error: Could not read data or file is empty.\n";
-		return 1;
-	}
-
-	displayBarChart(townName, populationData);
 	return 0;
 }
 
-// Reads population data (year and population) from a file
-vector<pair<int, int>> readPopulationData(const string& fileName) {
-	ifstream inputFile(fileName);
-	vector<pair<int, int>> data;
-	int year, population;
-
-	if (!inputFile) {
-		cerr << "Error: Unable to open file\"" << fileName << "\".\n";
-		return data; // empty
+// Displays Pattern A
+void displayPatternA() {
+	for (int i = 1; i <= 10; ++i) {
+		for (int j = 1; j <= i; ++j) {
+			cout << "+";
+		}
+		cout << endl;
 	}
-
-	while (inputFile >> year >> population) {
-		data.emplace_back(year, population);
-	}
-
-	inputFile.close();
-	return data;
 }
 
-// Displays a bar chart of the population data
-void displayBarChart(const string& townName, const vector<pair<int, int>>& data) {
-	cout << "\n" << townName << " Population Growth\n";
-	cout << "(each * represents 1,000 people)\n\n";
-
-	for (const auto& entry : data) {
-		int year = entry.first;
-		int population = entry.second;
-		int numStars = population / 1000;
-
-		cout << year << " ";
-		for (int i = 0; i < numStars; ++i) {
-			cout << "*";
+// Displays Pattern B
+void displayPatternB() {
+	for (int i = 10; i >= 1; --i) {
+		for (int j = 1; j <= i; ++j) {
+			cout << "+";
 		}
 		cout << endl;
 	}

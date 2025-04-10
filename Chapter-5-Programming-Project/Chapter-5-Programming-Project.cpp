@@ -1,74 +1,64 @@
 #include <iostream>
-#include <iomanip>
+#include <fstream>
+#include <vector>
+#include <string>
+#include <limits>
 
 using namespace std;
 
 // Function Prototypes
-int getStartingPopulation();
-double getDailyIncrease();
-int getNumberOfDays();
-void displayPopulationGrowth(int startPop, double dailyIncrease, int numDays);
+vector<string> readNamesFromFile(const string& filename);
+void findFrontAndBack(const vector<string>& names, string& front, string& back);
 
 int main() {
-	cout << "Population Growth Predictor\n";
+	const string filename = "LineUp.txt";
+	vector<string> studentNames = readNamesFromFile(filename);
 
-	int startingPopulation = getStartingPopulation();
-	double dailyIncrease = getDailyIncrease();
-	int numberOfDays = getNumberOfDays();
+	if (studentNames.empty()) {
+		cout << "No students found in the file." << endl;
+	}
+	else {
+		string frontOfLine, backOfLine;
+		findFrontAndBack(studentNames, frontOfLine, backOfLine);
 
-	displayPopulationGrowth(startingPopulation, dailyIncrease, numberOfDays);
+		cout << "Number of students: " << studentNames.size() << endl;
+		cout << "Student at the front of the line: " << frontOfLine << endl;
+		cout << "Student at the end of the line: " << backOfLine << endl;
+	}
 
 	return 0;
 }
 
-// Function to get and validate starting population
-int getStartingPopulation() {
-	int population;
-	do {
-		cout << "Enter the starting number of organisms (minimum 2): ";
-		cin >> population;
-		if (population < 2) {
-			cout << "Error: Starting Population must be at least 2.\n";
-		}
-	} while (population < 2);
-	return population;
+// Reads names from the file and returns them in a vector
+vector<string> readNamesFromFile(const string& filename) {
+	ifstream inputFile(filename);
+	vector<string> names;
+	string name;
+
+	if (!inputFile) {
+		cerr << "Error opening file: " << filename << endl;
+		return names; // Emptyvector
+	}
+
+	while (inputFile >> name) {
+		names.push_back(name);
+	}
+
+	inputFile.close();
+	return names;
 }
 
-// Function to get and validate daily increase
-double getDailyIncrease() {
-	double increase;
-	do {
-		cout << "Enter the average daily population increase (as a percentage): ";
-		cin >> increase;
-		if (increase < 0) {
-			cout << "Error: Daily incease cannot be negative.\n";
+// Find the front and back of the line based on alphabetical order
+void findFrontAndBack(const vector<string>& names, string& front, string& back) {
+	front = names[0];
+	back = names[0];
+
+	for (const string& name : names) {
+		if (name < front) {
+			front = name;
 		}
-	} while (increase < 0);
-	return increase;
-}
-
-// Funtion to get and validate number of days
-int getNumberOfDays() {
-	int days;
-	do {
-		cout << "Enter the number of days the organisms will multiply (minimum 1): ";
-		cin >> days;
-		if (days < 1) {
-			cout << "Error: Number of days must be at least 1.\n";
+		if (name > back) {
+			back = name;
 		}
-	} while (days < 1);
-	return days;
-}
-
-// Function to display population growth
-void displayPopulationGrowth(int startPop, double dailyIncrease, int numDays) {
-	cout << fixed << setprecision(2);
-	cout << "\nDay\tPopulation\n";
-	cout << "----------------------\n";
-
-	double population = startPop;
-	for (int day = 1; day <= numDays; ++day) {
-		cout << day << "\t" << population << endl;
-		population += population * (dailyIncrease / 100);
 	}
 }
